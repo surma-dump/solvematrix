@@ -140,7 +140,6 @@ void matrix_to_entity(MATRIX *m) {
 		}
 	}
 	for(depth = maxdepth - 1; depth >= 0; depth--) {
-		FRAC *e ;
 		for (cur = depth-1; cur >= 0; cur--) {
 			FRAC *piv = matrix_get_val(m, depth, depth) ;
 			FRAC *tz = matrix_get_val(m, cur, depth) ;
@@ -153,10 +152,13 @@ void matrix_to_entity(MATRIX *m) {
 
 			}
 		}
-		e = matrix_get_val(m, depth, depth) ;
-		frac_inverse(e,e) ;
-		matrix_multiply_row(m, depth, e) ;
 	}
+	for(depth = 0; depth < maxdepth; depth++) {
+		FRAC t, *e = matrix_get_val(m, depth, depth) ;
+		frac_inverse(&t,e) ;
+		matrix_multiply_row(m, depth, &t) ;
+	}
+
 }
 
 void inline free_matrix(MATRIX *m) {
