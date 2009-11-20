@@ -27,18 +27,19 @@ float inline frac_to_float(FRAC *f) {
 
 
 frac_t gcd(frac_t a, frac_t b) {
-	if(a == 0)
-		return b ;
-	if(b == 0)
-		return a ;
 	if(a < 0)
 		a = -a ;
 	if(b < 0)
 		b = -b ;
-	if (a>b) 
-		return gcd (b, a%b);
-	else
-		return gcd (a, b%a) ;
+	if(a == 0)
+		return b ;
+	while(b != 0) {
+		if (a > b)
+			a = a-b ;
+		else
+			b = b-a ;
+	}
+	return a ;
 
 }
 
