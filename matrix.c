@@ -73,6 +73,11 @@ void frac_negate(FRAC *tar, FRAC *n) {
 	tar->den = n->den ;
 }
 
+void frac_inverse(FRAC *tar, FRAC *n) {
+	tar->num = n->den ;
+	tar->den = n->num ;
+}
+
 void read_file (FILE *f, MATRIX *m) {
 	int i = 0 ;
 	fscanf(f,"%dx%d", &(m->rows), &(m->cols)) ;
@@ -123,6 +128,24 @@ void matrix_to_entity(MATRIX *m) {
 			}
 		}
 	}
+	for(depth = maxdepth - 1; depth >= 0; depth--) {
+		FRAC *e ;
+		for (cur = depth-1; cur >= 0; cur--) {
+			FRAC *piv = matrix_get_val(m, depth, depth) ;
+			FRAC *tz = matrix_get_val(m, cur, depth) ;
+			FRAC fac ;
+			if(tz->num != 0) {
+				frac_div(&fac, piv, tz) ;
+				frac_negate(&fac, &fac) ;
+				matrix_multiply_row(m, cur, &fac) ;	
+				matrix_add_row(m, cur, depth) ;
+
+			}
+		}
+		e = matrix_get_val(m, depth, depth) ;
+		frac_inverse(e,e) ;
+		matrix_multiply_row(m, depth, e) ;
+	}
 }
 
 void inline free_matrix(MATRIX *m) {
@@ -134,7 +157,7 @@ void print_matrix(MATRIX *m) {
 	for(row = 0; row < m->rows; row++) {
 		for(col = 0; col < m->cols; col++) {
 			FRAC *f = matrix_get_val(m, row, col) ;
-			printf("%3d/%3d ", f->num, f->den) ;
+			printf("(%5d/%-5d) ", f->num, f->den) ;
 		}
 		printf("\n");
 	}
