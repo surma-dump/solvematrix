@@ -43,6 +43,11 @@ frac_t gcd(frac_t a, frac_t b) {
 
 }
 
+void frac_copy(FRAC *tar, FRAC *src) {
+	tar->num = src->num ;
+	tar->den = src->den ;
+}
+
 void frac_cancel(FRAC *tar, FRAC *n) {
 	frac_t g = gcd(n->num, n->den) ;
 	tar->num = n->num / g ;
@@ -50,14 +55,18 @@ void frac_cancel(FRAC *tar, FRAC *n) {
 }
 
 void frac_div(FRAC *tar, FRAC *divisor, FRAC *dividend) {
-	tar->num = divisor->num * dividend->den ;
-	tar->den = divisor->den * dividend->num ;
+	FRAC t ;
+	t.num = divisor->num * dividend->den ;
+	t.den = divisor->den * dividend->num ;
+	frac_copy(tar,&t) ;
 	frac_cancel(tar, tar) ;
 }
 
 void frac_mul(FRAC *tar, FRAC *mul1, FRAC *mul2) {
-	tar->num = mul1->num * mul2->num ;
-	tar->den = mul1->den * mul2->den ;
+	FRAC t ;
+	t.num = mul1->num * mul2->num ;
+	t.den = mul1->den * mul2->den ;
+	frac_copy(tar,&t) ;
 	frac_cancel(tar, tar) ;
 }
 
@@ -74,8 +83,10 @@ void frac_negate(FRAC *tar, FRAC *n) {
 }
 
 void frac_inverse(FRAC *tar, FRAC *n) {
-	tar->num = n->den ;
-	tar->den = n->num ;
+	FRAC t ;
+	t.num = n->den ;
+	t.den = n->num ;
+	frac_copy(tar,&t) ;
 }
 
 void read_file (FILE *f, MATRIX *m) {
@@ -97,7 +108,7 @@ void matrix_multiply_row(MATRIX *m, int row, FRAC *mul) {
 		FRAC *v = matrix_get_val(m, row, i) ;
 		FRAC res ;
 		frac_mul(&res, v, mul) ;
-		*v = res ;
+		frac_copy(v, &res) ;
 	}
 }
 
@@ -108,7 +119,7 @@ void matrix_add_row(MATRIX *m, int row, int add_row) {
 		FRAC *a = matrix_get_val(m, add_row, i) ;
 		FRAC f ;
 		frac_add(&f, t, a) ;
-		*t = f ;
+		frac_copy(t, &f) ;
 	}
 }
 
