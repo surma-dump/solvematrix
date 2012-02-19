@@ -155,8 +155,10 @@ void matrix_to_entity(MATRIX *m) {
 	}
 	for(depth = 0; depth < maxdepth; depth++) {
 		FRAC t, *e = matrix_get_val(m, depth, depth) ;
-		frac_inverse(&t,e) ;
-		matrix_multiply_row(m, depth, &t) ;
+		if (e->num != 0) {
+			frac_inverse(&t,e) ;
+			matrix_multiply_row(m, depth, &t) ;
+		}
 	}
 
 }
